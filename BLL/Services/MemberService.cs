@@ -13,7 +13,7 @@ namespace BLL.Services
 {
     public class MemberService : ISimpleChatService<MemberDTO>
     {
-        ISimpleChatRepository<Member> _repository;
+        private readonly ISimpleChatRepository<Member> _repository;
         private readonly IMapper _mapper;
 
         public MemberService(ISimpleChatRepository<Member> repository, IMapper mapper)

@@ -11,7 +11,7 @@ namespace SimpleChat.Pages
         private NavigationManager? NavigationManager { get; set; }
 
         [Inject]
-        private IMemberController _memberController { get; set; }
+        private IMemberController? MemberController { get; set; }
 
         private HubConnection? hubConnection;
         public string? connectionId;
@@ -22,9 +22,9 @@ namespace SimpleChat.Pages
 
 
         //private List<string> messages = new List<string>();
-        public List<Message> messages = new List<Message>();
+        public List<Message> messages = new();
         
-        public List<Client> groups = new List<Client>();
+        public List<Client> groups = new();
 
         public string? messageInput;
         public string? toUserInput;
@@ -82,7 +82,7 @@ namespace SimpleChat.Pages
             if (!string.IsNullOrEmpty(memberLogin))
             {
                 isMemberLogins = true;
-                members = _memberController.GetAll().ToList();
+                members = MemberController.GetAll().ToList();
                 MemberModel member = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
                 if (member != null)
                 {
@@ -90,7 +90,7 @@ namespace SimpleChat.Pages
                 }
                 else
                 {
-                    _memberController.Create(new MemberModel() { NickName = memberLogin });
+                    MemberController.Create(new MemberModel() { NickName = memberLogin });
                 }
             }
         }
@@ -101,9 +101,9 @@ namespace SimpleChat.Pages
             {
                 if (members.Find(m => m.NickName.ToUpper().Equals(newMember.ToUpper())) == null)
                 {
-                    _memberController.Create(new MemberModel() { NickName = newMember });
+                    MemberController.Create(new MemberModel() { NickName = newMember });
                     newMember = string.Empty;
-                    members = _memberController.GetAll().ToList();
+                    members = MemberController.GetAll().ToList();
                     MemberModel member = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
                     if (member != null)
                     {
@@ -121,12 +121,12 @@ namespace SimpleChat.Pages
             }
         }
 
-        public async Task ButtonVisible()
+        public void ButtonVisible()
         {
             bVisible = "visible";
         }
 
-        public async Task ButtonHide()
+        public void ButtonHide()
         {
             bVisible = "invisible";
         }

@@ -1,6 +1,6 @@
 ﻿namespace DTO.Talk
 {
-    public class TalkDTO
+    public class TalkModel
     {
         public int Id { get; set; }
         public string? Name { get; set; }

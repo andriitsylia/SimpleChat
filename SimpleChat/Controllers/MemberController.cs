@@ -4,12 +4,12 @@ using AutoMapper;
 using DTO.Member;
 
 
-namespace SimpleChat.Services
+namespace SimpleChat.Controllers
 {
     public class MemberController : IMemberController
     {
-        private ISimpleChatService<MemberDTO> _service;
-        private IMapper _mapper;
+        private readonly ISimpleChatService<MemberDTO> _service;
+        private readonly IMapper _mapper;
 
         public MemberController(ISimpleChatService<MemberDTO> service, IMapper mapper)
         {

@@ -9,12 +9,12 @@ using DAL.Entities;
 using DAL.Repositories;
 using BLL.Interfaces;
 using DTO.Member;
-using DTO.Member;
+using DTO.Talk;
 using BLL.Services;
 using SimpleChat.Hubs;
 using SimpleChat.Interfaces;
-using SimpleChat.Services;
 using Mapper;
+using SimpleChat.Controllers;
 
 namespace SimpleChat
 {
@@ -40,7 +40,8 @@ namespace SimpleChat
 
             builder.Services.AddScoped<ISimpleChatService<MemberDTO>, MemberService>();
             builder.Services.AddScoped<IMemberController, MemberController>();
-
+            builder.Services.AddScoped<ISimpleChatService<TalkDTO>, TalkService>();
+            builder.Services.AddScoped<ITalkController, TalkController>();
 
             var app = builder.Build();
 
