@@ -11,6 +11,7 @@ using DAL.Repositories;
 using BLL.Interfaces;
 using BLL.DTOs;
 using BLL.Services;
+using SimpleChat.Hubs;
 
 namespace SimpleChat
 {
@@ -54,6 +55,9 @@ namespace SimpleChat
             app.UseRouting();
             
             app.MapBlazorHub();
+
+            app.MapHub<SimpleChatHub>("/SimpleChatHub");
+
             app.MapFallbackToPage("/_Host");
 
             app.Run();

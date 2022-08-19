@@ -1,3 +1,131 @@
 ﻿@page "/"
 
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inherits IndexBase
+
 <PageTitle>Simple chat</PageTitle>
+
+<header class="p-2 bg-secondary text-white text-center">
+    <h3>Simple chat</h3>
+    <h6>Connection Id: @userId</h6>
+</header>
+
+<div class="container-fluid border mt-2 mb-2">
+    <div class="row" style="height:100%">
+        <div class="col-sm-5">
+
+            <div class="row mt-2">
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@isUserLogins" @bind="userInput" />
+                </div>
+                <div class="col-sm-4">
+                    <button type="button" class="btn btn-primary form-control" disabled="@isUserLogins" @onclick="UserLogin">Login</button>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col">
+                    <div class="bg-secondary text-white text-center">
+                        <label>Users</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@(!isUserLogins)" />
+                </div>
+                <div class="col-sm-4">
+                    <button type="button" class="btn btn-primary form-control" disabled="@(!isUserLogins)">Add user</button>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col">
+                    <select id="userList" class="form-select" disabled="@(!isUserLogins)">
+                        @foreach (var user in users)
+                        {
+                            <option value="@(user.id)">@user.name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col">
+                    <div class="bg-secondary text-white text-center">
+                        <label>Groups</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2 mb-2">
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="Group name" disabled="@(!isUserLogins)" />
+                </div>
+                <div class="col-sm-4">
+                    <button type="button" class="btn btn-primary form-control" disabled="@(!isUserLogins)">Add group</button>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col">
+                    <select id="groupList" class="form-select" disabled="@(!isUserLogins)">
+                        @foreach (var group in groups)
+                        {
+                            <option value="@(group.id)">@group.name</option>
+                        }
+                    </select>
+                    <label class="mt-2">Group's members:</label>
+                    <select id="groupUserList" class="form-select" size="8" disabled="@(!isUserLogins)">
+                        @foreach (var user in users)
+                        {
+                            <option value="@(user.id)">@user.name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-7">
+            <div class="row mt-2">
+                <div class="col-sm-10">
+                    <input type="text" class="form-control mb-2" placeholder="Message" disabled="@(!isUserLogins)" @bind="messageInput" />
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-primary form-control" disabled="@(!isUserLogins)" @onclick="Send">Send</button>
+                </div>
+            </div>
+            <div class="container mt-2" style="height:500px;overflow-y:scroll">
+                <ul id="messagesList" class="mt-2" style="list-style:none;margin:auto;padding:0">
+                    @foreach (var message in messages)
+                    {
+                        <li id="@(message.id)" @onclick="@(() => Edit(message.id))" @onmousemove="@(() => ButtonVisible())" @onmouseout="@(() => ButtonHide())">
+                            @message.message
+                            <button class="btn btn-sm @bVisible">
+                                Delete
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="p-2 bg-secondary text-white text-center">
+    <h3>Simple chat</h3>
+    <div class="form-group mt-2">
+        <label>
+            To user:
+            <input @bind="toUserInput" />
+        </label>
+    </div>
+</footer>
+
+
+
+@code {
+    
+}
