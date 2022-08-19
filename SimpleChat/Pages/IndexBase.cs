@@ -2,30 +2,31 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using DTO.Member;
 using SimpleChat.Interfaces;
+using DTO.Talk;
 
 namespace SimpleChat.Pages
 {
     public class IndexBase : ComponentBase
     {
-        [Inject]
-        private NavigationManager? NavigationManager { get; set; }
-
-        [Inject]
-        private IMemberController? MemberController { get; set; }
+        [Inject] private NavigationManager? NavigationManager { get; set; }
+        [Inject] private IMemberController? MemberController { get; set; }
+        [Inject] private ITalkController? TalkController { get; set; }
 
         private HubConnection? hubConnection;
         public string? connectionId;
         public string memberLogin = string.Empty;
-        public bool isMemberLogins = false;
+        public bool isMemberLogins;
         public List<MemberModel> members = new();
-        public string newMember = string.Empty; 
+        public List<TalkModel> talks = new();
+        public List<TalkModel> talkMembers = new();
+        public string newMember = string.Empty;
+        public string newTalk = string.Empty;
+        public MemberModel memberSender = new();
+        public MemberModel memberReceiver = new();
+        public int memberReceiverId;
 
-
-        //private List<string> messages = new List<string>();
         public List<Message> messages = new();
         
-        public List<Client> groups = new();
-
         public string? messageInput;
         public string? toUserInput;
         public string buttonName = "Send";
@@ -37,12 +38,6 @@ namespace SimpleChat.Pages
         {
             public int id;
             public string? message;
-        }
-
-        public class Client
-        {
-            public int id;
-            public string name;
         }
 
         protected override async Task OnInitializedAsync()
@@ -81,17 +76,30 @@ namespace SimpleChat.Pages
         {
             if (!string.IsNullOrEmpty(memberLogin))
             {
-                isMemberLogins = true;
+                isMemberLogins = !isMemberLogins;
+                
                 members = MemberController.GetAll().ToList();
-                MemberModel member = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
-                if (member != null)
+                memberSender = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
+                if (memberSender != null)
                 {
-                    members.Remove(member);
+                    memberLogin = memberSender.NickName;
+                    members.Remove(memberSender);
                 }
                 else
                 {
-                    MemberController.Create(new MemberModel() { NickName = memberLogin });
+                    memberSender = new MemberModel() { NickName = memberLogin };
+                    MemberController.Create(memberSender);
                 }
+
+                talks = TalkController.GetNonPrivate().ToList();
+            }
+        }
+
+        public void SelectMemberReceiver(ChangeEventArgs e)
+        {
+            if (MemberController != null && e.Value != null)
+            {
+                memberReceiver = MemberController.GetById(Convert.ToInt32(e.Value));
             }
         }
 

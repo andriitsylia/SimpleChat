@@ -63,8 +63,8 @@ namespace DAL.Repositories
             return _dbSet.ToList();
         }
 
-        public IEnumerable<T> Get(Expression<Func<T, bool>>? filter,
-                                  Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy,
+        public IEnumerable<T> Get(Expression<Func<T, bool>>? filter = null,
+                                  Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
                                   string includeProperties = "")
         {
             IQueryable<T> query = _dbSet;

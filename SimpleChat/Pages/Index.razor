@@ -17,7 +17,7 @@
 
             <div class="row mt-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@isMemberLogins" @bind="memberLogin" />
+                    <input type="text" class="form-control" placeholder="Member name (nick)" disabled="@isMemberLogins" @bind="memberLogin" />
                 </div>
                 <div class="col-sm-4">
                     <button type="button" class="btn btn-primary form-control" disabled="@isMemberLogins" @onclick="MemberLogins">Login</button>
@@ -27,14 +27,14 @@
             <div class="row mt-4">
                 <div class="col">
                     <div class="bg-secondary text-white text-center">
-                        <label>Users</label>
+                        <label>Members</label>
                     </div>
                 </div>
             </div>
 
             <div class="row mt-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@(!isMemberLogins)" @bind="newMember" />
+                    <input type="text" class="form-control" placeholder="Member name (nick)" disabled="@(!isMemberLogins)" @bind="newMember" />
                 </div>
                 <div class="col-sm-4">
                     <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)" @onclick="AddNewMember">New member</button>
@@ -43,7 +43,7 @@
 
             <div class="row mt-2">
                 <div class="col">
-                    <select id="userList" class="form-select" disabled="@(!isMemberLogins)">
+                    <select class="form-select" disabled="@(!isMemberLogins)" @onchange="SelectMemberReceiver">
                         @foreach (var member in members)
                         {
                             <option value="@(member.Id)">@member.NickName</option>
@@ -55,29 +55,29 @@
             <div class="row mt-4">
                 <div class="col">
                     <div class="bg-secondary text-white text-center">
-                        <label>Groups</label>
+                        <label>Talks</label>
                     </div>
                 </div>
             </div>
 
             <div class="row mt-2 mb-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="Group name" disabled="@(!isMemberLogins)" />
+                    <input type="text" class="form-control" placeholder="Talk name" disabled="@(!isMemberLogins)" />
                 </div>
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)">New group</button>
+                    <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)">New talk</button>
                 </div>
             </div>
 
             <div class="row mt-2">
                 <div class="col">
-                    <select id="groupList" class="form-select" disabled="@(!isMemberLogins)">
-                        @foreach (var group in groups)
+                    <select class="form-select" disabled="@(!isMemberLogins)">
+                        @foreach (var talk in talks)
                         {
-                            <option value="@(group.id)">@group.name</option>
+                            <option value="@(talk.Id)">@talk.Name</option>
                         }
                     </select>
-                    <label class="mt-2">Group's members:</label>
+                    <label class="mt-2">Talk's members:</label>
                     <select id="groupUserList" class="form-select" size="8" disabled="@(!isMemberLogins)">
                         @foreach (var member in members)
                         {
@@ -123,9 +123,3 @@
         </label>
     </div>
 </footer>
-
-
-
-@code {
-    
-}

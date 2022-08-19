@@ -9,5 +9,8 @@ namespace SimpleChat.Interfaces
         void Delete(int id);
         TalkModel GetById(int id);
         IEnumerable<TalkModel> GetAll();
+        IEnumerable<TalkModel> GetPrivate();
+        IEnumerable<TalkModel> GetNonPrivate();
+
     }
 }

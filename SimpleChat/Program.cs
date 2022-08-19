@@ -39,8 +39,10 @@ namespace SimpleChat
             builder.Services.AddScoped<ISimpleChatRepository<Message>, SimpleChatRepository<Message>>();
 
             builder.Services.AddScoped<ISimpleChatService<MemberDTO>, MemberService>();
-            builder.Services.AddScoped<IMemberController, MemberController>();
             builder.Services.AddScoped<ISimpleChatService<TalkDTO>, TalkService>();
+            builder.Services.AddScoped<IPrivateTalkService, TalkService>();
+
+            builder.Services.AddScoped<IMemberController, MemberController>();
             builder.Services.AddScoped<ITalkController, TalkController>();
 
             var app = builder.Build();
