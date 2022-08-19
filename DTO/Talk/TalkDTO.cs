@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.DTOs
+namespace DTO.Talk
 {
     public class TalkDTO
     {

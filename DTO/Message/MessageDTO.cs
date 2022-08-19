@@ -1,11 +1,12 @@
-﻿using DAL.Entities;
+﻿using DTO.Member;
+using DTO.Talk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.DTOs
+namespace DTO.Message
 {
     public class MessageDTO
     {

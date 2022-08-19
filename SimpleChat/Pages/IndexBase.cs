@@ -1,26 +1,37 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using DTO.Member;
+using SimpleChat.Interfaces;
 
 namespace SimpleChat.Pages
 {
     public class IndexBase : ComponentBase
     {
         [Inject]
-        public NavigationManager? NavigationManager { get; set; }
+        private NavigationManager? NavigationManager { get; set; }
+
+        [Inject]
+        private IMemberController _memberController { get; set; }
 
         private HubConnection? hubConnection;
+        public string? connectionId;
+        public string memberLogin = string.Empty;
+        public bool isMemberLogins = false;
+        public List<MemberModel> members = new();
+        public string newMember = string.Empty; 
+
+
         //private List<string> messages = new List<string>();
         public List<Message> messages = new List<Message>();
-        public List<Client> users = new List<Client>();
+        
         public List<Client> groups = new List<Client>();
-        public string? userInput;
-        public string? userId;
+
         public string? messageInput;
         public string? toUserInput;
         public string buttonName = "Send";
         public int messageNumber = 0;
         public string bVisible = "visible";
-        public bool isUserLogins = false;
+        
 
         public class Message
         {
@@ -44,42 +55,60 @@ namespace SimpleChat.Pages
             {
                 var encodedMsg = $"{user}: {message}";
                 messages.Insert(0, new Message() { id = messageNumber++, message = encodedMsg });
-                //messageNumber++;
-                //userInput = string.Empty;
                 messageInput = string.Empty;
                 toUserInput = string.Empty;
-                userId = hubConnection.ConnectionId;
+                connectionId = hubConnection.ConnectionId;
                 buttonName = buttonName.Equals("Sended") ? "Send" : "Sended";
                 InvokeAsync(StateHasChanged);
             });
 
             await hubConnection.StartAsync();
-            userId = hubConnection.ConnectionId;
+
+            connectionId = hubConnection.ConnectionId;
         }
 
         public async Task Send()
         {
             if (hubConnection is not null)
             {
-                await hubConnection.SendAsync("SendMessage", toUserInput, userInput, messageInput);
+                await hubConnection.SendAsync("SendMessage", toUserInput, memberLogin, messageInput);
                 //await hubConnection.SendAsync("SendPrivateMessage", toUserInput, userInput, "private: " + messageInput);
                 //await hubConnection.SendAsync("SendMessageToCaller", toUserInput, userInput + "%", "%" + messageInput);
             }
         }
 
-        public void UserLogin()
+        public void MemberLogins()
         {
-            if (!string.IsNullOrEmpty(userInput))
+            if (!string.IsNullOrEmpty(memberLogin))
             {
-                isUserLogins = true;
-                for (int i = 0; i < 10; i++)
+                isMemberLogins = true;
+                members = _memberController.GetAll().ToList();
+                MemberModel member = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
+                if (member != null)
                 {
-                    messages.Add(new Message() { id = messageNumber++, message = $"message #{i + 1}" });
+                    members.Remove(member);
                 }
-                for (int i = 0; i < 10; i++)
+                else
                 {
-                    users.Add(new Client() { id = i, name = $"User {i + 1}" });
-                    groups.Add(new Client() { id = i, name = $"Group {i + 1}" });
+                    _memberController.Create(new MemberModel() { NickName = memberLogin });
+                }
+            }
+        }
+
+        public void AddNewMember()
+        {
+            if (!string.IsNullOrWhiteSpace(newMember))
+            {
+                if (members.Find(m => m.NickName.ToUpper().Equals(newMember.ToUpper())) == null)
+                {
+                    _memberController.Create(new MemberModel() { NickName = newMember });
+                    newMember = string.Empty;
+                    members = _memberController.GetAll().ToList();
+                    MemberModel member = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
+                    if (member != null)
+                    {
+                        members.Remove(member);
+                    }
                 }
             }
         }
@@ -88,7 +117,7 @@ namespace SimpleChat.Pages
         {
             if (hubConnection is not null)
             {
-                await hubConnection.SendAsync("SendMessage", string.Empty, userInput, messages[messageNumber].message);
+                await hubConnection.SendAsync("SendMessage", string.Empty, memberLogin, messages[messageNumber].message);
             }
         }
 

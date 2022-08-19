@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.Interfaces;
-using BLL.DTOs;
+using DTO.Member;
 using DAL.Entities;
 using DAL.Interfaces;
 using AutoMapper;
@@ -26,6 +26,7 @@ namespace BLL.Services
         {
             Member member = _mapper.Map<Member>(item);
             _repository.Create(member);
+            _repository.Save();
         }
 
         public void Delete(int id)

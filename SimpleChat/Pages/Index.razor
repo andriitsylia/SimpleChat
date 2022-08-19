@@ -8,7 +8,7 @@
 
 <header class="p-2 bg-secondary text-white text-center">
     <h3>Simple chat</h3>
-    <h6>Connection Id: @userId</h6>
+    <h6>Connection Id: @connectionId</h6>
 </header>
 
 <div class="container-fluid border mt-2 mb-2">
@@ -17,10 +17,10 @@
 
             <div class="row mt-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@isUserLogins" @bind="userInput" />
+                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@isMemberLogins" @bind="memberLogin" />
                 </div>
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary form-control" disabled="@isUserLogins" @onclick="UserLogin">Login</button>
+                    <button type="button" class="btn btn-primary form-control" disabled="@isMemberLogins" @onclick="MemberLogins">Login</button>
                 </div>
             </div>
 
@@ -34,19 +34,19 @@
 
             <div class="row mt-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@(!isUserLogins)" />
+                    <input type="text" class="form-control" placeholder="User name (nick)" disabled="@(!isMemberLogins)" @bind="newMember" />
                 </div>
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary form-control" disabled="@(!isUserLogins)">Add user</button>
+                    <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)" @onclick="AddNewMember">New member</button>
                 </div>
             </div>
 
             <div class="row mt-2">
                 <div class="col">
-                    <select id="userList" class="form-select" disabled="@(!isUserLogins)">
-                        @foreach (var user in users)
+                    <select id="userList" class="form-select" disabled="@(!isMemberLogins)">
+                        @foreach (var member in members)
                         {
-                            <option value="@(user.id)">@user.name</option>
+                            <option value="@(member.Id)">@member.NickName</option>
                         }
                     </select>
                 </div>
@@ -62,26 +62,26 @@
 
             <div class="row mt-2 mb-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="Group name" disabled="@(!isUserLogins)" />
+                    <input type="text" class="form-control" placeholder="Group name" disabled="@(!isMemberLogins)" />
                 </div>
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary form-control" disabled="@(!isUserLogins)">Add group</button>
+                    <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)">New group</button>
                 </div>
             </div>
 
             <div class="row mt-2">
                 <div class="col">
-                    <select id="groupList" class="form-select" disabled="@(!isUserLogins)">
+                    <select id="groupList" class="form-select" disabled="@(!isMemberLogins)">
                         @foreach (var group in groups)
                         {
                             <option value="@(group.id)">@group.name</option>
                         }
                     </select>
                     <label class="mt-2">Group's members:</label>
-                    <select id="groupUserList" class="form-select" size="8" disabled="@(!isUserLogins)">
-                        @foreach (var user in users)
+                    <select id="groupUserList" class="form-select" size="8" disabled="@(!isMemberLogins)">
+                        @foreach (var member in members)
                         {
-                            <option value="@(user.id)">@user.name</option>
+                            <option value="@(member.Id)">@member.NickName</option>
                         }
                     </select>
                 </div>
@@ -91,10 +91,10 @@
         <div class="col-sm-7">
             <div class="row mt-2">
                 <div class="col-sm-10">
-                    <input type="text" class="form-control mb-2" placeholder="Message" disabled="@(!isUserLogins)" @bind="messageInput" />
+                    <input type="text" class="form-control mb-2" placeholder="Message" disabled="@(!isMemberLogins)" @bind="messageInput" />
                 </div>
                 <div class="col-sm-2">
-                    <button type="submit" class="btn btn-primary form-control" disabled="@(!isUserLogins)" @onclick="Send">Send</button>
+                    <button type="submit" class="btn btn-primary form-control" disabled="@(!isMemberLogins)" @onclick="Send">Send</button>
                 </div>
             </div>
             <div class="container mt-2" style="height:500px;overflow-y:scroll">

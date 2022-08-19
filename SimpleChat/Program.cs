@@ -3,15 +3,18 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using DAL.EF;
 using DAL.Configurations;
-using Mapper;
 using AutoMapper;
 using DAL.Interfaces;
 using DAL.Entities;
 using DAL.Repositories;
 using BLL.Interfaces;
-using BLL.DTOs;
+using DTO.Member;
+using DTO.Member;
 using BLL.Services;
 using SimpleChat.Hubs;
+using SimpleChat.Interfaces;
+using SimpleChat.Services;
+using Mapper;
 
 namespace SimpleChat
 {
@@ -36,6 +39,7 @@ namespace SimpleChat
             builder.Services.AddScoped<ISimpleChatRepository<Message>, SimpleChatRepository<Message>>();
 
             builder.Services.AddScoped<ISimpleChatService<MemberDTO>, MemberService>();
+            builder.Services.AddScoped<IMemberController, MemberController>();
 
 
             var app = builder.Build();
