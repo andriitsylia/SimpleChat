@@ -48,7 +48,7 @@ namespace DAL.Repositories
             _dbSet.Remove(entity);
         }
 
-        public bool SaveChanges()
+        public bool Save()
         {
             return _context.SaveChanges() >= 0;
         }
@@ -60,7 +60,7 @@ namespace DAL.Repositories
 
         public IEnumerable<T> GetAll()
         {
-            throw new NotImplementedException();
+            return _dbSet.ToList();
         }
 
         public IEnumerable<T> Get(Expression<Func<T, bool>>? filter,

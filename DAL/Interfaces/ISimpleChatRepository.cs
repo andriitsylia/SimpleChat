@@ -12,7 +12,7 @@ namespace DAL.Interfaces
         void Create(T entity);
         void Update(T entity);
         void Delete(T entity);
-        bool SaveChanges();
+        bool Save();
         T GetById(int id);
         IEnumerable<T> GetAll();
         IEnumerable<T> Get(Expression<Func<T, bool>>? filter,

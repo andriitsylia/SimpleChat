@@ -4,6 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using SimpleChat.Data;
 using DAL.EF;
 using DAL.Configurations;
+using Mapper;
+using AutoMapper;
+using DAL.Interfaces;
+using DAL.Entities;
+using DAL.Repositories;
+using BLL.Interfaces;
+using BLL.DTOs;
+using BLL.Services;
 
 namespace SimpleChat
 {
@@ -20,6 +28,17 @@ namespace SimpleChat
 
             string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<ChatContext>(option => option.UseSqlServer(connectionString));
+
+            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new DataProfile()));
+            builder.Services.AddSingleton(mapperConfig.CreateMapper());
+
+            builder.Services.AddScoped<ISimpleChatRepository<Member>, SimpleChatRepository<Member>>();
+            builder.Services.AddScoped<ISimpleChatRepository<Talk>, SimpleChatRepository<Talk>>();
+            builder.Services.AddScoped<ISimpleChatRepository<TalkMember>, SimpleChatRepository<TalkMember>>();
+            builder.Services.AddScoped<ISimpleChatRepository<Message>, SimpleChatRepository<Message>>();
+
+            builder.Services.AddScoped<ISimpleChatService<MemberDTO>, MemberService>();
+
 
             var app = builder.Build();
 
