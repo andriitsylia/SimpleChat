@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class TalkService : ISimpleChatService<TalkDTO>, IPrivateTalkService
+    public class TalkService : IPrivateTalkService
     {
         private readonly ISimpleChatRepository<Talk> _repository;
         private readonly IMapper _mapper;
@@ -73,7 +73,7 @@ namespace BLL.Services
 
         public IEnumerable<TalkDTO> GetNonPrivate()
         {
-            IEnumerable<Talk> talks = _repository.Get(filter: t => !t.IsPrivate);
+            IEnumerable<Talk> talks = _repository.Get(filter: t => !t.IsPrivate, includeProperties: "");
             IEnumerable<TalkDTO> result = _mapper.Map<IEnumerable<TalkDTO>>(talks);
             return result;
         }

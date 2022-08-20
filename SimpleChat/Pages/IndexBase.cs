@@ -11,6 +11,7 @@ namespace SimpleChat.Pages
         [Inject] private NavigationManager? NavigationManager { get; set; }
         [Inject] private IMemberController? MemberController { get; set; }
         [Inject] private ITalkController? TalkController { get; set; }
+        [Inject] private ITalkMemberController? TalkMemberController { get; set; }
 
         private HubConnection? hubConnection;
         public string? connectionId;
@@ -18,11 +19,12 @@ namespace SimpleChat.Pages
         public bool isMemberLogins;
         public List<MemberModel> members = new();
         public List<TalkModel> talks = new();
-        public List<TalkModel> talkMembers = new();
+        public List<MemberModel> talkMembers = new();
         public string newMember = string.Empty;
         public string newTalk = string.Empty;
         public MemberModel memberSender = new();
         public MemberModel memberReceiver = new();
+        public TalkModel talkReceiver = new();
         public int memberReceiverId;
 
         public List<Message> messages = new();
@@ -119,6 +121,16 @@ namespace SimpleChat.Pages
                     }
                 }
             }
+        }
+
+        public void SelectTalkReceiver(ChangeEventArgs e)
+        {
+            if (TalkController != null && e.Value != null)
+            {
+                talkReceiver = TalkController.GetById(Convert.ToInt32(e.Value));
+            }
+
+            talkMembers  = TalkMemberController.GetByIds(talkReceiver.Id, )
         }
 
         public async Task Edit(int messageNumber)

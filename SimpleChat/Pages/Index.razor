@@ -71,7 +71,7 @@
 
             <div class="row mt-2">
                 <div class="col">
-                    <select class="form-select" disabled="@(!isMemberLogins)">
+                    <select class="form-select" disabled="@(!isMemberLogins)" @onchange="SelectTalkReceiver">
                         @foreach (var talk in talks)
                         {
                             <option value="@(talk.Id)">@talk.Name</option>
@@ -79,9 +79,9 @@
                     </select>
                     <label class="mt-2">Talk's members:</label>
                     <select id="groupUserList" class="form-select" size="8" disabled="@(!isMemberLogins)">
-                        @foreach (var member in members)
+                        @foreach (var talkMember in talkMembers)
                         {
-                            <option value="@(member.Id)">@member.NickName</option>
+                            <option value="@(talkMember.Id)">@talkMember.NickName</option>
                         }
                     </select>
                 </div>

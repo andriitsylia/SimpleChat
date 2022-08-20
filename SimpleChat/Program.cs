@@ -15,6 +15,7 @@ using SimpleChat.Hubs;
 using SimpleChat.Interfaces;
 using Mapper;
 using SimpleChat.Controllers;
+using DTO.TalkMember;
 
 namespace SimpleChat
 {
@@ -39,8 +40,8 @@ namespace SimpleChat
             builder.Services.AddScoped<ISimpleChatRepository<Message>, SimpleChatRepository<Message>>();
 
             builder.Services.AddScoped<ISimpleChatService<MemberDTO>, MemberService>();
-            builder.Services.AddScoped<ISimpleChatService<TalkDTO>, TalkService>();
             builder.Services.AddScoped<IPrivateTalkService, TalkService>();
+            builder.Services.AddScoped<ITalkMemberService, TalkMemberService>();
 
             builder.Services.AddScoped<IMemberController, MemberController>();
             builder.Services.AddScoped<ITalkController, TalkController>();

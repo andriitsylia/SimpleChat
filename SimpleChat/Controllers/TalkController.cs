@@ -7,14 +7,12 @@ namespace SimpleChat.Controllers
 {
     public class TalkController : ITalkController
     {
-        private readonly ISimpleChatService<TalkDTO> _service;
-        private readonly IPrivateTalkService _privateService;
+        private readonly IPrivateTalkService _service;
         private readonly IMapper _mapper;
 
-        public TalkController(ISimpleChatService<TalkDTO> service, IPrivateTalkService privateService, IMapper mapper)
+        public TalkController(IPrivateTalkService service, IMapper mapper)
         {
             _service = service;
-            _privateService = privateService;
             _mapper = mapper;
         }
 
@@ -58,13 +56,13 @@ namespace SimpleChat.Controllers
 
         public IEnumerable<TalkModel> GetPrivate()
         {
-            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_privateService.GetPrivate());
+            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetPrivate());
             return result;
         }
 
         public IEnumerable<TalkModel> GetNonPrivate()
         {
-            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_privateService.GetNonPrivate());
+            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetNonPrivate());
             return result;
         }
 

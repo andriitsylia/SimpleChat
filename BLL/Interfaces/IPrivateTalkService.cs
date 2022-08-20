@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Interfaces
 {
-    public interface IPrivateTalkService
+    public interface IPrivateTalkService : ISimpleChatService<TalkDTO>
     {
         public IEnumerable<TalkDTO> GetPrivate();
         public IEnumerable<TalkDTO> GetNonPrivate();
