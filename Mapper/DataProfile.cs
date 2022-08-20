@@ -3,6 +3,7 @@ using DTO.Member;
 using DTO.Talk;
 using DAL.Entities;
 using DTO.TalkMember;
+using DTO.Message;
 
 namespace Mapper
 {
@@ -19,6 +20,8 @@ namespace Mapper
             CreateMap<TalkMember, TalkMemberDTO>().ReverseMap();
             CreateMap<TalkMemberDTO, TalkMemberModel>().ReverseMap();
 
+            CreateMap<Message, MessageDTO>().ReverseMap().ForMember(m => m.Id, options => options.Ignore());
+            CreateMap<MessageDTO, MessageModel>().ReverseMap();
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class TalkService : IPrivateTalkService
+    public class TalkService : ITalkService
     {
         private readonly ISimpleChatRepository<Talk> _repository;
         private readonly IMapper _mapper;
@@ -57,6 +57,13 @@ namespace BLL.Services
             return result;
         }
 
+        public TalkDTO GetByIdWithMembers(int id)
+        {
+            Talk talk = _repository.Get(filter: t => t.Id == id, includeProperties: "Members").FirstOrDefault();
+            TalkDTO result = _mapper.Map<TalkDTO>(talk);
+            return result;
+        }
+
         public IEnumerable<TalkDTO> GetAll()
         {
             IEnumerable<Talk> talks = _repository.GetAll();
@@ -64,16 +71,23 @@ namespace BLL.Services
             return result;
         }
 
+        public IEnumerable<TalkDTO> GetAllWithMembers()
+        {
+            IEnumerable<Talk> talks = _repository.Get(includeProperties: "Members");
+            IEnumerable<TalkDTO> result = _mapper.Map<IEnumerable<TalkDTO>>(talks);
+            return result;
+        }
+
         public IEnumerable<TalkDTO> GetPrivate()
         {
-            IEnumerable<Talk> talks = _repository.Get(filter: t => t.IsPrivate);
+            IEnumerable<Talk> talks = _repository.Get(filter: t => t.IsPrivate, includeProperties: "Members");
             IEnumerable<TalkDTO> result = _mapper.Map<IEnumerable<TalkDTO>>(talks);
             return result;
         }
 
         public IEnumerable<TalkDTO> GetNonPrivate()
         {
-            IEnumerable<Talk> talks = _repository.Get(filter: t => !t.IsPrivate, includeProperties: "");
+            IEnumerable<Talk> talks = _repository.Get(filter: t => !t.IsPrivate, includeProperties: "Members");
             IEnumerable<TalkDTO> result = _mapper.Map<IEnumerable<TalkDTO>>(talks);
             return result;
         }

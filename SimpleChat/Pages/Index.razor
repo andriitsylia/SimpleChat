@@ -62,10 +62,10 @@
 
             <div class="row mt-2 mb-2">
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" placeholder="Talk name" disabled="@(!isMemberLogins)" />
+                    <input type="text" class="form-control" placeholder="Talk name" disabled="@(!isMemberLogins)" @bind="newTalk" />
                 </div>
                 <div class="col-sm-4">
-                    <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)">New talk</button>
+                    <button type="button" class="btn btn-primary form-control" disabled="@(!isMemberLogins)" @onclick="AddNewTalk">New talk</button>
                 </div>
             </div>
 

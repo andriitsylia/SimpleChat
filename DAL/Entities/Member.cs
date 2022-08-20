@@ -12,6 +12,7 @@ namespace DAL.Entities
         public string NickName { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public ICollection<Talk> Talks { get; set; } = new List<Talk>();
         public ICollection<TalkMember> TalkMembers { get; set; } = new List<TalkMember>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();
     }

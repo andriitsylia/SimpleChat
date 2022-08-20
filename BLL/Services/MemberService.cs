@@ -11,7 +11,7 @@ using AutoMapper;
 
 namespace BLL.Services
 {
-    public class MemberService : ISimpleChatService<MemberDTO>
+    public class MemberService : IMemberService
     {
         private readonly ISimpleChatRepository<Member> _repository;
         private readonly IMapper _mapper;
@@ -46,9 +46,23 @@ namespace BLL.Services
             return result;
         }
 
+        public IEnumerable<MemberDTO> GetAllWithTalks()
+        {
+            IEnumerable<Member> members = _repository.Get(includeProperties: "Talks");
+            IEnumerable<MemberDTO> result = _mapper.Map<IEnumerable<MemberDTO>>(members);
+            return result;
+        }
+
         public MemberDTO GetById(int id)
         {
             Member member = _repository.GetById(id);
+            MemberDTO result = _mapper.Map<MemberDTO>(member);
+            return result;
+        }
+
+        public MemberDTO GetByIdWithTalks(int id)
+        {
+            Member member = _repository.Get(m => m.Id == id, includeProperties: "Talks").FirstOrDefault();
             MemberDTO result = _mapper.Map<MemberDTO>(member);
             return result;
         }

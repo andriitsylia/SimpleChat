@@ -128,9 +128,18 @@ namespace SimpleChat.Pages
             if (TalkController != null && e.Value != null)
             {
                 talkReceiver = TalkController.GetById(Convert.ToInt32(e.Value));
+                talkMembers = talkReceiver.Members.ToList();
             }
+        }
 
-            talkMembers  = TalkMemberController.GetByIds(talkReceiver.Id, )
+        public void AddNewTalk()
+        {
+            if (!string.IsNullOrWhiteSpace(newTalk))
+            {
+                TalkController.Create(new TalkModel() { Name = newTalk });
+                newTalk = string.Empty;
+                talks = TalkController.GetNonPrivate().ToList();
+            }
         }
 
         public async Task Edit(int messageNumber)

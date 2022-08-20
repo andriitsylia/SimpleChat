@@ -8,10 +8,10 @@ namespace SimpleChat.Controllers
 {
     public class MemberController : IMemberController
     {
-        private readonly ISimpleChatService<MemberDTO> _service;
+        private readonly IMemberService _service;
         private readonly IMapper _mapper;
 
-        public MemberController(ISimpleChatService<MemberDTO> service, IMapper mapper)
+        public MemberController(IMemberService service, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;

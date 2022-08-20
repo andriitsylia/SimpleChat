@@ -7,10 +7,10 @@ namespace SimpleChat.Controllers
 {
     public class TalkController : ITalkController
     {
-        private readonly IPrivateTalkService _service;
+        private readonly ITalkService _service;
         private readonly IMapper _mapper;
 
-        public TalkController(IPrivateTalkService service, IMapper mapper)
+        public TalkController(ITalkService service, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;
