@@ -62,7 +62,7 @@ namespace BLL.Services
 
         public MemberDTO GetByIdWithTalks(int id)
         {
-            Member member = _repository.Get(m => m.Id == id, includeProperties: "Talks").FirstOrDefault();
+            Member member = _repository.Get(filter: m => m.Id == id, includeProperties: "Talks").FirstOrDefault();
             MemberDTO result = _mapper.Map<MemberDTO>(member);
             return result;
         }

@@ -71,6 +71,13 @@ namespace BLL.Services
             return result;
         }
 
+        public TalkDTO GetByName(string name)
+        {
+            Talk talk = _repository.Get(filter: t => t.Name.Equals(name), includeProperties: "Members").FirstOrDefault();
+            TalkDTO result = _mapper.Map<TalkDTO>(talk);
+            return result;
+        }
+
         public IEnumerable<TalkDTO> GetAllWithMembers()
         {
             IEnumerable<Talk> talks = _repository.Get(includeProperties: "Members");

@@ -44,14 +44,14 @@ namespace SimpleChat.Controllers
 
         public MemberModel GetById(int id)
         {
-            MemberDTO memberDTO = _service.GetById(id);
+            MemberDTO memberDTO = _service.GetByIdWithTalks(id);
             MemberModel result = _mapper.Map<MemberModel>(memberDTO);
             return result;
         }
 
         public IEnumerable<MemberModel> GetAll()
         {
-            IEnumerable<MemberModel> result = _mapper.Map<IEnumerable<MemberModel>>(_service.GetAll());
+            IEnumerable<MemberModel> result = _mapper.Map<IEnumerable<MemberModel>>(_service.GetAllWithTalks());
             return result;
         }
     }

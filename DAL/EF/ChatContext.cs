@@ -13,10 +13,9 @@ namespace DAL.EF
     {
         public DbSet<Member> Members { get; set; }
         public DbSet<Talk> Talks { get; set; }
-        public DbSet<TalkMember> TalkMembers { get; set; }
         public DbSet<Message> Messages { get; set; }
 
-        public ChatContext(DbContextOptions<ChatContext> option) : base(option)
+        public ChatContext(DbContextOptions<ChatContext> options) : base(options)
         {
 
         }
@@ -25,7 +24,6 @@ namespace DAL.EF
         {
             modelBuilder.ApplyConfiguration<Member>(new MemberConfiguration());
             modelBuilder.ApplyConfiguration<Talk>(new TalkConfiguration());
-            modelBuilder.ApplyConfiguration<TalkMember>(new TalkMemberConfiguration());
         }
 
     }

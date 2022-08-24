@@ -1,4 +1,7 @@
-﻿namespace DTO.Member;
+﻿using DTO.Message;
+using DTO.Talk;
+
+namespace DTO.Member;
 
 public class MemberModel
 {
@@ -6,4 +9,6 @@ public class MemberModel
     public string NickName { get; set; } = string.Empty;
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+    public ICollection<TalkModel> Talks { get; set; } = new List<TalkModel>();
+    public ICollection<MessageModel> Messages { get; set; } = new List<MessageModel>();
 }

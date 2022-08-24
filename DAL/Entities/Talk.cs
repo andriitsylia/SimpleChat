@@ -12,7 +12,6 @@ namespace DAL.Entities
         public string? Name { get; set; }
         public bool IsPrivate { get; set; }
         public ICollection<Member> Members { get; set; } = new List<Member>();
-        public ICollection<TalkMember> TalkMembers { get; set; } = new List<TalkMember>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();
 
     }

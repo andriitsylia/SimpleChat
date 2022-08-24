@@ -36,7 +36,8 @@ namespace DAL.Repositories
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-            _dbSet.Update(entity);
+            //_dbSet.Update(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
         public void Delete(T entity)
@@ -75,7 +76,7 @@ namespace DAL.Repositories
 
             foreach (var includeProperty in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
-                query = query.Include(includeProperties);
+                query = query.Include(includeProperty);
             }
 
             if (orderBy != null)

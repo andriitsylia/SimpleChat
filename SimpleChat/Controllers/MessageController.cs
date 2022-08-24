@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.Interfaces;
+using DTO.Member;
 using DTO.Message;
 using DTO.Message;
 using SimpleChat.Interfaces;
@@ -28,7 +29,8 @@ namespace SimpleChat.Controllers
             MessageDTO messageDTO = _service.GetById(message.Id);
             if (messageDTO != null)
             {
-                _mapper.Map(message, messageDTO);
+            //    _mapper.Map(message, messageDTO);
+                messageDTO.Text = message.Text;
                 _service.Update(messageDTO);
             }
         }

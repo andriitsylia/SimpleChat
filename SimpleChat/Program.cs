@@ -15,7 +15,6 @@ using SimpleChat.Hubs;
 using SimpleChat.Interfaces;
 using Mapper;
 using SimpleChat.Controllers;
-using DTO.TalkMember;
 
 namespace SimpleChat
 {
@@ -29,7 +28,7 @@ namespace SimpleChat
             builder.Services.AddServerSideBlazor();
 
             string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<ChatContext>(option => option.UseSqlServer(connectionString));
+            builder.Services.AddDbContext<ChatContext>(options => options.UseSqlServer(connectionString));
 
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new DataProfile()));
             builder.Services.AddSingleton(mapperConfig.CreateMapper());
@@ -37,19 +36,16 @@ namespace SimpleChat
             builder.Services.AddScoped<ISimpleChatRepository<Member>, SimpleChatRepository<Member>>();
             builder.Services.AddScoped<ISimpleChatRepository<Talk>, SimpleChatRepository<Talk>>();
             builder.Services.AddScoped<ISimpleChatRepository<Message>, SimpleChatRepository<Message>>();
-            builder.Services.AddScoped<ISimpleChatRepository<TalkMember>, SimpleChatRepository<TalkMember>>();
 
             builder.Services.AddScoped<IMemberService, MemberService>();
             builder.Services.AddScoped<ITalkService, TalkService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
-            builder.Services.AddScoped<ITalkMemberService, TalkMemberService>();
-
 
             builder.Services.AddScoped<IMemberController, MemberController>();
             builder.Services.AddScoped<ITalkController, TalkController>();
             builder.Services.AddScoped<IMessageController, MessageController>();
-            builder.Services.AddScoped<ITalkMemberController, TalkMemberController>();
 
+            builder.Services.AddSingleton<ChatManager>();
             var app = builder.Build();
 
             app.MigrateDatabase();

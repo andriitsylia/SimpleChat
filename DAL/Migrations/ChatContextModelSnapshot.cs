@@ -59,8 +59,9 @@ namespace DAL.Migrations
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Sender")
-                        .HasColumnType("int");
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TalkId")
                         .HasColumnType("int");
@@ -94,83 +95,6 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Talks");
-                });
-
-            modelBuilder.Entity("DAL.Entities.TalkMember", b =>
-                {
-                    b.Property<int>("TalkId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TalkId", "MemberId");
-
-                    b.HasIndex("MemberId");
-
-                    b.ToTable("TalkMembers");
-
-                    b.HasData(
-                        new
-                        {
-                            TalkId = 1,
-                            MemberId = 1
-                        },
-                        new
-                        {
-                            TalkId = 1,
-                            MemberId = 2
-                        },
-                        new
-                        {
-                            TalkId = 2,
-                            MemberId = 2
-                        },
-                        new
-                        {
-                            TalkId = 2,
-                            MemberId = 5
-                        },
-                        new
-                        {
-                            TalkId = 3,
-                            MemberId = 3
-                        },
-                        new
-                        {
-                            TalkId = 3,
-                            MemberId = 4
-                        },
-                        new
-                        {
-                            TalkId = 4,
-                            MemberId = 1
-                        },
-                        new
-                        {
-                            TalkId = 4,
-                            MemberId = 2
-                        },
-                        new
-                        {
-                            TalkId = 4,
-                            MemberId = 3
-                        },
-                        new
-                        {
-                            TalkId = 5,
-                            MemberId = 3
-                        },
-                        new
-                        {
-                            TalkId = 5,
-                            MemberId = 4
-                        },
-                        new
-                        {
-                            TalkId = 5,
-                            MemberId = 5
-                        });
                 });
 
             modelBuilder.Entity("MemberTalk", b =>
@@ -207,25 +131,6 @@ namespace DAL.Migrations
                     b.Navigation("Talk");
                 });
 
-            modelBuilder.Entity("DAL.Entities.TalkMember", b =>
-                {
-                    b.HasOne("DAL.Entities.Member", "Member")
-                        .WithMany("TalkMembers")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DAL.Entities.Talk", "Talk")
-                        .WithMany("TalkMembers")
-                        .HasForeignKey("TalkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-
-                    b.Navigation("Talk");
-                });
-
             modelBuilder.Entity("MemberTalk", b =>
                 {
                     b.HasOne("DAL.Entities.Member", null)
@@ -244,15 +149,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Entities.Member", b =>
                 {
                     b.Navigation("Messages");
-
-                    b.Navigation("TalkMembers");
                 });
 
             modelBuilder.Entity("DAL.Entities.Talk", b =>
                 {
                     b.Navigation("Messages");
-
-                    b.Navigation("TalkMembers");
                 });
 #pragma warning restore 612, 618
         }

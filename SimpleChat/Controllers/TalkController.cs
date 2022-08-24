@@ -43,14 +43,22 @@ namespace SimpleChat.Controllers
 
         public TalkModel GetById(int id)
         {
-            TalkDTO talkDTO = _service.GetById(id);
+            TalkDTO talkDTO = _service.GetByIdWithMembers(id);
             TalkModel result = _mapper.Map<TalkModel>(talkDTO);
             return result;
         }
 
+        public TalkModel GetByName(string name)
+        {
+            TalkDTO talkDTO = _service.GetByName(name);
+            TalkModel result = _mapper.Map<TalkModel>(talkDTO);
+            return result;
+        }
+
+
         public IEnumerable<TalkModel> GetAll()
         {
-            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetAll());
+            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetAllWithMembers());
             return result;
         }
 
@@ -65,7 +73,6 @@ namespace SimpleChat.Controllers
             IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetNonPrivate());
             return result;
         }
-
 
     }
 }
