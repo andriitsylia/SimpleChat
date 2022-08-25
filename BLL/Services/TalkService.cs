@@ -3,11 +3,6 @@ using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
 using DTO.Talk;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -85,14 +80,14 @@ namespace BLL.Services
             return result;
         }
 
-        public IEnumerable<TalkDTO> GetPrivate()
+        public IEnumerable<TalkDTO> GetPrivateWithMembers()
         {
             IEnumerable<Talk> talks = _repository.Get(filter: t => t.IsPrivate, includeProperties: "Members");
             IEnumerable<TalkDTO> result = _mapper.Map<IEnumerable<TalkDTO>>(talks);
             return result;
         }
 
-        public IEnumerable<TalkDTO> GetNonPrivate()
+        public IEnumerable<TalkDTO> GetNonPrivateWithMembers()
         {
             IEnumerable<Talk> talks = _repository.Get(filter: t => !t.IsPrivate, includeProperties: "Members");
             IEnumerable<TalkDTO> result = _mapper.Map<IEnumerable<TalkDTO>>(talks);

@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
-using AutoMapper.Execution;
 using BLL.Interfaces;
 using DAL.Entities;
 using DAL.Interfaces;
-using DTO.Member;
 using DTO.Message;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -36,8 +29,7 @@ namespace BLL.Services
             Message message = _repository.GetById(item.Id);
             if (message != null)
             {
-                //_mapper.Map(item, message);
-                message.Text = item.Text;
+                _mapper.Map(item, message);
                 _repository.Update(message);
                 _repository.Save();
             }
@@ -60,7 +52,7 @@ namespace BLL.Services
             return result;
         }
 
-        public MessageDTO GetByIdWithTalks(int id)
+        public MessageDTO GetByIdWithMemberAndTalks(int id)
         {
             Message message = _repository.Get(filter: m => m.Id == id, includeProperties: "Member, Talk").FirstOrDefault();
             MessageDTO result = _mapper.Map<MessageDTO>(message);
@@ -74,7 +66,7 @@ namespace BLL.Services
             return result;
         }
 
-        public IEnumerable<MessageDTO> GetAllWithTalks()
+        public IEnumerable<MessageDTO> GetAllWithMembersAndTalks()
         {
             IEnumerable<Message> messages = _repository.Get(includeProperties: "Member, Talk");
             IEnumerable<MessageDTO> result = _mapper.Map<IEnumerable<MessageDTO>>(messages);

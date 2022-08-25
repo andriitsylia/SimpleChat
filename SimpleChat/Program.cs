@@ -1,20 +1,16 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.EntityFrameworkCore;
-using DAL.EF;
-using DAL.Configurations;
 using AutoMapper;
-using DAL.Interfaces;
-using DAL.Entities;
-using DAL.Repositories;
 using BLL.Interfaces;
-using DTO.Member;
-using DTO.Talk;
 using BLL.Services;
+using DAL.Configurations;
+using DAL.EF;
+using DAL.Entities;
+using DAL.Interfaces;
+using DAL.Repositories;
+using Mapper;
+using Microsoft.EntityFrameworkCore;
+using SimpleChat.Controllers;
 using SimpleChat.Hubs;
 using SimpleChat.Interfaces;
-using Mapper;
-using SimpleChat.Controllers;
 
 namespace SimpleChat
 {
@@ -61,7 +57,7 @@ namespace SimpleChat
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             app.MapBlazorHub();
 
             app.MapHub<SimpleChatHub>("/SimpleChatHub");

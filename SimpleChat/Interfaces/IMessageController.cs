@@ -2,12 +2,7 @@
 
 namespace SimpleChat.Interfaces
 {
-    public interface IMessageController
+    public interface IMessageController : IController<MessageModel>
     {
-        void Create(MessageModel talk);
-        void Update(MessageModel talk);
-        void Delete(int id);
-        MessageModel GetById(int id);
-        IEnumerable<MessageModel> GetAll();
     }
 }

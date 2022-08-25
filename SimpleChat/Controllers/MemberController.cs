@@ -1,7 +1,7 @@
-﻿using SimpleChat.Interfaces;
+﻿using AutoMapper;
 using BLL.Interfaces;
-using AutoMapper;
 using DTO.Member;
+using SimpleChat.Interfaces;
 
 
 namespace SimpleChat.Controllers

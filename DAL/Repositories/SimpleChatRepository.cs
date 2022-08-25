@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL.EF;
 using DAL.Interfaces;
-using DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -36,8 +31,7 @@ namespace DAL.Repositories
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-            //_dbSet.Update(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _dbSet.Update(entity);
         }
 
         public void Delete(T entity)

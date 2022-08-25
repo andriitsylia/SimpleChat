@@ -1,16 +1,10 @@
-﻿using DTO.Member;
-using DTO.Message;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DTO.Message;
 
 namespace BLL.Interfaces
 {
     public interface IMessageService : ISimpleChatService<MessageDTO>
     {
-        public MessageDTO GetByIdWithTalks(int id);
-        public IEnumerable<MessageDTO> GetAllWithTalks();
+        public MessageDTO GetByIdWithMemberAndTalks(int id);
+        public IEnumerable<MessageDTO> GetAllWithMembersAndTalks();
     }
 }

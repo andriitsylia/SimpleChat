@@ -55,7 +55,6 @@ namespace SimpleChat.Controllers
             return result;
         }
 
-
         public IEnumerable<TalkModel> GetAll()
         {
             IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetAllWithMembers());
@@ -64,13 +63,13 @@ namespace SimpleChat.Controllers
 
         public IEnumerable<TalkModel> GetPrivate()
         {
-            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetPrivate());
+            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetPrivateWithMembers());
             return result;
         }
 
         public IEnumerable<TalkModel> GetNonPrivate()
         {
-            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetNonPrivate());
+            IEnumerable<TalkModel> result = _mapper.Map<IEnumerable<TalkModel>>(_service.GetNonPrivateWithMembers());
             return result;
         }
 

@@ -1,6 +1,6 @@
-﻿namespace BLL.Interfaces
+﻿namespace SimpleChat.Interfaces
 {
-    public interface ISimpleChatService<T> where T : class
+    public interface IController<T> where T : class
     {
         void Create(T item);
         void Update(T item);

@@ -2,8 +2,8 @@
 {
     public class ChatMember
     {
-        private readonly List<ChatConnection> _connections;
-        private readonly List<string> _talks;
+        private readonly List<ChatConnection> _connections = new();
+        private readonly List<string> _talks = new();
         public string Name { get; }
 
         public IEnumerable<ChatConnection> Connections
@@ -11,6 +11,14 @@
             get
             {
                 return _connections;
+            }
+        }
+
+        public IEnumerable<string> ConnectionIds
+        {
+            get
+            {
+                return Connections.Select(c => c.ConnectionId);
             }
         }
 
@@ -37,8 +45,6 @@
         public ChatMember(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            _connections = new List<ChatConnection>();
-            _talks = new List<string>();
         }
 
         public void AppendConnection(string connectionId)
@@ -59,11 +65,10 @@
             if (!string.IsNullOrWhiteSpace(connectionId))
             {
                 var connection = _connections.SingleOrDefault(c => c.ConnectionId.Equals(connectionId));
-                if (connection == null)
+                if (connection != null)
                 {
-                    return;
+                    _connections.Remove(connection);
                 }
-                _connections.Remove(connection);
             }
         }
 

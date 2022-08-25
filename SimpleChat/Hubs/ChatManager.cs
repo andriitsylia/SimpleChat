@@ -1,28 +1,16 @@
 ﻿using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using DTO.Member;
+using System.Xml.Linq;
 
 namespace SimpleChat.Hubs
 {
     public class ChatManager
     {
         public List<ChatMember> ChatMembers { get; set; } = new();
-        public Dictionary<string, List<string>> ChatTalks { get; set; } = new();
-
-        private ChatMember? GetConnectedMemberByName(string name)
-        {
-            return ChatMembers.FirstOrDefault(
-                cm => string.Equals(cm.Name, name, StringComparison.CurrentCultureIgnoreCase));
-        }
-
-        private ChatMember? GetConnectedMemberById(string connectionId)
-        {
-            return ChatMembers.FirstOrDefault(
-                cm => cm.Connections.Select(c => c.ConnectionId).Contains(connectionId));
-        }
 
         public void ConnectMember(string name, string connectionId, IEnumerable<string> talks)
         {
             var memberAlreadyExists = GetConnectedMemberByName(name);
-            
             if (memberAlreadyExists != null)
             {
                 memberAlreadyExists.AppendConnection(connectionId);
@@ -64,6 +52,18 @@ namespace SimpleChat.Hubs
 
             memberExists.RemoveConnection(connectionId);
             return false;
+        }
+
+        public ChatMember? GetConnectedMemberByName(string name)
+        {
+            return ChatMembers.FirstOrDefault(
+                cm => string.Equals(cm.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public ChatMember? GetConnectedMemberById(string connectionId)
+        {
+            return ChatMembers.FirstOrDefault(
+                cm => cm.Connections.Select(c => c.ConnectionId).Contains(connectionId));
         }
     }
 }

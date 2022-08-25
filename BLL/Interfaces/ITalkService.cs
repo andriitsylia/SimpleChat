@@ -1,10 +1,4 @@
-﻿using DTO.Member;
-using DTO.Talk;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DTO.Talk;
 
 namespace BLL.Interfaces
 {
@@ -13,7 +7,7 @@ namespace BLL.Interfaces
         public TalkDTO GetByName(string name);
         public TalkDTO GetByIdWithMembers(int id);
         public IEnumerable<TalkDTO> GetAllWithMembers();
-        public IEnumerable<TalkDTO> GetPrivate();
-        public IEnumerable<TalkDTO> GetNonPrivate();
+        public IEnumerable<TalkDTO> GetPrivateWithMembers();
+        public IEnumerable<TalkDTO> GetNonPrivateWithMembers();
     }
 }

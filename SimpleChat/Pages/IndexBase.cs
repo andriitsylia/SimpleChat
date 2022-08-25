@@ -1,481 +1,309 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
-using DTO.Member;
-using SimpleChat.Interfaces;
-using DTO.Talk;
+﻿using DTO.Member;
 using DTO.Message;
-using DAL.Entities;
-using static System.Net.Mime.MediaTypeNames;
-using SimpleChat.Hubs;
+using DTO.Talk;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
+using SimpleChat.Interfaces;
+using SimpleChat.Services;
 
 namespace SimpleChat.Pages
 {
-    public enum ReceiverType
-    {
-        Member,
-        Talk
-    }
-
-    public class Receiver
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public ReceiverType Type { get; set; }
-        public int TalkId { get; set; }
-    }
-
     public class IndexBase : ComponentBase
     {
-        public const int MESSAGES_ON_PAGE = 5;
-        public const int PREVIOUS_PAGE = 1;
-        public const int NEXT_PAGE = -1;
+        public const int MESSAGES_ON_PAGE = 20;
 
         [Inject] private NavigationManager? NavigationManager { get; set; }
         [Inject] private IMemberController? MemberController { get; set; }
         [Inject] private ITalkController? TalkController { get; set; }
         [Inject] private IMessageController? MessageController { get; set; }
-        [Inject] private ChatManager ChatManager { get; set; }
 
-        private HubConnection? hubConnection;
-        public string? connectionId;
-        public string memberLogin = string.Empty;
-        public bool isMemberLogins;
-        public List<MemberModel> members = new();
-        public List<TalkModel> talks = new();
-        public List<MemberModel> talkMembers = new();
-        public List<MessageModel> messages = new List<MessageModel>();
+        public List<MemberModel> allMembers = new();
         public List<MessageModel> allMessages = new List<MessageModel>();
-        public string newMember = string.Empty;
-        public string newTalk = string.Empty;
-        public MemberModel memberSender = new();
-        public MemberModel memberReceiver = new();
-        public TalkModel talkReceiver = new();
-        //public int memberReceiverId;
-        //public ReceiverType receiverType;
-        //public string receiverName = string.Empty;
-        public Receiver receiver = new();
+        public List<MessageModel> visibleMessages = new List<MessageModel>();
+        public List<MemberModel> talkMembers = new();
+        public MessageModel selectedMessage = new();
+        public string memberLogin = string.Empty;
+        public bool isMemberLogon;
+        public MemberModel sender = new();
+        public List<TalkModel> senderNonPrivateTalks = new();
+        public PageHandler pageHandler = new PageHandler(MESSAGES_ON_PAGE);
+        public HubConnection? hubConnection;
+        public string? connectionId;
         public string outputMessage = string.Empty;
-
-        public string buttonName = "Send";
-        public int messageNumber = 0;
-
-        public class Message
-        {
-            public int id;
-            public string sender;
-            public string? message;
-        }
-        
-        public Message mmm;
-        private List<TalkModel> memberTalks = new();
-        public bool buttonPreviousDisabled;
-        public bool buttonNextDisabled = true;
-        public int pageCounter;
-        public string editedMessage;
-        public string answerMessage;
-        public MessageModel mes = new();
-        public bool isReceiverTalk;
+        public string editedMessage = string.Empty;
+        public string answerMessage = string.Empty;
+        public bool isSelectedOwnMessage;
+        public bool isSelectedNotOwnMessage;
+        public Participant participant = new();
 
         protected override async Task OnInitializedAsync()
         {
-            //members = MemberController.GetAll().ToList();
-            //talks = TalkController.GetAll().ToList();
-        }
-        
-        public async Task HubConnect(string member, IEnumerable<string> talks)
-        {
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri("/SimpleChatHub"))
-                .Build();
-
-            //hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
-            //{
-            //    var encodedMsg = $"{user}: {message}";
-            //    //messages.Insert(0, new Message() { id = messageNumber++, message = encodedMsg });
-            //    //this.message = string.Empty;
-            //    //connectionId = hubConnection.ConnectionId;
-            //    //buttonName = buttonName.Equals("Sended") ? "Send" : "Sended";
-            //    InvokeAsync(StateHasChanged);
-            //});
-            
-            hubConnection.On<string, string>("SendMessageAsync", (sender, message) =>
-            {
-                allMessages = MessageController.GetAll().Where(m => m.TalkId == receiver.TalkId).Select(m => m).Reverse().ToList();
-                messages = (List<MessageModel>)GetTwentyMessages(allMessages);
-                //var encodedMsg = $"{sender,15}: {message}";
-                //messages.Insert(0, new Message() { id = ++messageNumber, sender = sender, message = message });
-                //this.message = string.Empty;
-                //connectionId = hubConnection.ConnectionId;
-                //buttonName = buttonName.Equals("Sended") ? "Send" : "Sended";
-                InvokeAsync(StateHasChanged);
-            });
-
-            //hubConnection.On<string, string>("SendMessageToMemberAsync", (sender, message) =>
-            //{
-            //    var encodedMsg = $"{sender} says {message}";
-            //    messages.Insert(0, new Message() { id = ++messageNumber, message = encodedMsg });
-            //    //this.message = string.Empty;
-            //    //connectionId = hubConnection.ConnectionId;
-            //    //buttonName = buttonName.Equals("Sended") ? "Send" : "Sended";
-                //InvokeAsync(StateHasChanged);
-            //});
-
-            //hubConnection.On<string, string>("SendMessageToTalkAsync", (sender, message) =>
-            //{
-            //    var encodedMsg = $"{sender} says {message}";
-            //    messages.Insert(0, new Message() { id = ++messageNumber, message = encodedMsg });
-            //    //this.message = string.Empty;
-            //    //connectionId = hubConnection.ConnectionId;
-            //    //buttonName = buttonName.Equals("Sended") ? "Send" : "Sended";
-            //    InvokeAsync(StateHasChanged);
-            //});
-
-            await hubConnection.StartAsync();
-
-            ChatManager.ConnectMember(memberSender.NickName, hubConnection.ConnectionId, talks);
-            await hubConnection.SendAsync("ConnectMember", memberSender.NickName, hubConnection.ConnectionId, talks);
-            connectionId = hubConnection.ConnectionId;
-        }
-
-        public async Task Send()
-        {
-            if (hubConnection is not null)
-            {
-                //List<TalkModel> talks = TalkController.GetPrivate().ToList();
-
-                MessageModel messageModel = new()
-                {
-                    Text = outputMessage,
-                    Sender = memberSender.NickName,
-                    Created = DateTime.Now,
-                    MemberId = memberSender.Id,
-                    TalkId = receiver.TalkId
-                };
-
-                MessageController.Create(messageModel);
-                allMessages = MessageController.GetAll().Where(m => m.TalkId == receiver.TalkId).Select(m => m).Reverse().ToList();
-                messages = (List<MessageModel>)GetTwentyMessages(allMessages);
-
-                switch (receiver.Type)
-                {
-                    case ReceiverType.Member:
-                        await hubConnection.SendAsync("SendMessageToMemberAsync",
-                                                      receiver.Name,
-                                                      memberSender.NickName,
-                                                      outputMessage);
-                        break;
-                    case ReceiverType.Talk:
-                        await hubConnection.SendAsync("SendMessageToTalkAsync",
-                                                      receiver.Name,
-                                                      memberSender.NickName,
-                                                      outputMessage);
-                        break;
-                    default:
-                        await hubConnection.SendAsync("SendMessageAsync", memberSender.NickName, outputMessage);
-                        break;
-                }
-                outputMessage = string.Empty;
-            }
+            allMembers = MemberController.GetAll().ToList();
+            pageHandler = new PageHandler(MESSAGES_ON_PAGE);
         }
 
         public async Task MemberLogins()
         {
             if (!string.IsNullOrEmpty(memberLogin))
             {
-                //isMemberLogins = !isMemberLogins;
-                members = MemberController.GetAll().ToList();
-                
-
-                foreach (var m in members)
+                sender = allMembers.FirstOrDefault(m => string.Equals(m.NickName, memberLogin, StringComparison.CurrentCultureIgnoreCase));
+                if (sender != null)
                 {
-                    
-                    ChatManager.ConnectMember(m.NickName, string.Empty, m.Talks.Select(t => t.Name).ToList());
+                    isMemberLogon = !isMemberLogon;
+                    memberLogin = sender.NickName;
+                    allMembers.Remove(sender);
+                    senderNonPrivateTalks = sender.Talks.Where(t => !t.IsPrivate).ToList();
+                    await HubConnect(sender.NickName, sender.Talks.Select(t => t.Name).ToList());
                 }
-
-                var tal = TalkController.GetAll();
-                foreach (var t in tal)
+                else
                 {
-
-                    ChatManager.ChatTalks.TryAdd(t.Name, t.Members.Select(m => m.NickName).ToList());
+                    memberLogin = string.Empty;
                 }
-
-                memberSender = members.Find(m => string.Equals(m.NickName,
-                                                               memberLogin,
-                                                               StringComparison.CurrentCultureIgnoreCase));
-                if (memberSender != null)
-                {
-                    isMemberLogins = !isMemberLogins;
-
-                    memberLogin = memberSender.NickName;
-                    members.Remove(memberSender);
-                    //memberTalks = talks.Where(t => !t.IsPrivate).Select(t => t).ToList();
-                    talks = TalkController.GetNonPrivate().ToList();
-                    
-
-                    await HubConnect(memberSender.NickName, memberSender.Talks.Select(t => t.Name).ToList());
-                }
-                //else
-                //{
-                //    memberSender = new MemberModel() { NickName = memberLogin };
-                //    MemberController.Create(memberSender);
-                //}
-
             }
         }
 
-        public async Task SelectMemberReceiver(ChangeEventArgs e)
+        public async Task HubConnect(string member, IEnumerable<string> talks)
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(NavigationManager.ToAbsoluteUri("/SimpleChatHub"))
+                .Build();
+
+            hubConnection.On<string, string>("SendMessageAsync", (sender, message) =>
+            {
+                LoadAllMessages();
+                InvokeAsync(StateHasChanged);
+            });
+
+            await hubConnection.StartAsync();
+            await hubConnection.SendAsync("ConnectMember", member, hubConnection.ConnectionId, talks);
+            connectionId = hubConnection.ConnectionId;
+        }
+
+        public void SelectMemberParticipant(ChangeEventArgs e)
         {
             if (MemberController != null && e.Value != null)
             {
-                memberReceiver = MemberController.GetById(Convert.ToInt32(e.Value));
-               
-                TalkModel talk = memberReceiver.Talks.FirstOrDefault(
-                    t => string.Equals(t.Name,
-                                       $"{memberSender.NickName}_{memberReceiver.NickName}",
-                                       StringComparison.CurrentCultureIgnoreCase)
-                      || string.Equals(t.Name,
-                                       $"{memberReceiver.NickName}_{memberSender.NickName}",
-                                       StringComparison.CurrentCultureIgnoreCase));
+                MemberModel member = MemberController.GetById(Convert.ToInt32(e.Value));
 
-                //if (talk == null)
-                //{
-                //    talk = new TalkModel()
-                //    {
-                //        Name = $"{memberSender.NickName.ToUpper()}_{memberReceiver.NickName.ToUpper()}",
-                //        IsPrivate = true,
-                //        Members = { memberSender, memberReceiver }
-                //    };
+                TalkModel talk = TalkController.GetByName($"{sender.NickName}_{member.NickName}")
+                              ?? TalkController.GetByName($"{member.NickName}_{sender.NickName}");
 
-                //    TalkController.Create(talk);
-                //    talk = TalkController.GetByName(talk.Name);
-                //}
                 if (talk != null)
                 {
-                    receiver = new Receiver()
+                    participant = new Participant()
                     {
-                        Id = memberReceiver.Id,
-                        Name = memberReceiver.NickName,
-                        Type = ReceiverType.Member,
-                        TalkId = talk.Id
+                        Id = member.Id,
+                        Name = member.NickName,
+                        Type = ParticipantType.Member,
+                        TalkId = talk.Id,
+                        TalkName = talk.Name
                     };
-                    isReceiverTalk = false;
-                    pageCounter = 0;
-                    allMessages = MessageController.GetAll().Where(m => m.TalkId == receiver.TalkId).Select(m => m).Reverse().ToList();
-                    messages = GetTwentyMessages(allMessages);
-                    int i = 0;
+
+                    pageHandler = new PageHandler(MESSAGES_ON_PAGE);
+                    LoadAllMessages();
+
+                    isSelectedOwnMessage = false;
+                    isSelectedNotOwnMessage = false;
                 }
                 else
                 {
                     allMessages.Clear();
-                    messages.Clear();
+                    visibleMessages.Clear();
                 }
-                //await hubConnection.SendAsync("SendMessageAsync", string.Empty, String.Empty);
             }
         }
 
-        public void AddNewMember()
-        {
-            //if (!string.IsNullOrWhiteSpace(newMember))
-            //{
-            //    if (members.Find(m => m.NickName.ToUpper().Equals(newMember.ToUpper())) == null)
-            //    {
-            //        MemberController.Create(new MemberModel() { NickName = newMember });
-            //        newMember = string.Empty;
-            //        members = MemberController.GetAll().ToList();
-            //        MemberModel member = members.Find(m => m.NickName.ToUpper().Equals(memberLogin.ToUpper()));
-            //        if (member != null)
-            //        {
-            //            members.Remove(member);
-            //        }
-            //    }
-            //}
-        }
-
-        public async Task SelectTalkReceiver(ChangeEventArgs e)
+        public void SelectTalkParticipant(ChangeEventArgs e)
         {
             if (TalkController != null && e.Value != null)
             {
-                talkReceiver = TalkController.GetById(Convert.ToInt32(e.Value));
-                
-                receiver = new Receiver()
+                TalkModel talk = TalkController.GetById(Convert.ToInt32(e.Value));
+
+                participant = new Participant()
                 {
-                    Id = talkReceiver.Id,
-                    Name = talkReceiver.Name,
-                    Type = ReceiverType.Talk,
-                    TalkId = talkReceiver.Id
+                    Id = talk.Id,
+                    Name = talk.Name,
+                    Type = ParticipantType.Talk,
+                    TalkId = talk.Id,
+                    TalkName = talk.Name
                 };
-                isReceiverTalk = true;
-                talkMembers = talkReceiver.Members.ToList();
-                allMessages = MessageController.GetAll().Where(m => m.TalkId == receiver.TalkId).Select(m => m).Reverse().ToList();
-                messages = (List<MessageModel>)GetTwentyMessages(allMessages);
+
+                talkMembers = talk.Members.ToList();
+                pageHandler = new PageHandler(MESSAGES_ON_PAGE);
+                LoadAllMessages();
+
+                isSelectedOwnMessage = false;
+                isSelectedNotOwnMessage = false;
             }
-            //await hubConnection.SendAsync("SendMessageAsync", string.Empty, String.Empty);
         }
 
-        public void AddNewTalk()
+        public async Task SendMessageAsync(Participant participant, MessageModel message)
         {
-            //if (!string.IsNullOrWhiteSpace(newTalk))
-            //{
-            //    TalkController.Create(new TalkModel() { Name = newTalk });
-            //    newTalk = string.Empty;
-            //    talks = TalkController.GetNonPrivate().ToList();
-            //}
+            switch (participant.Type)
+            {
+                case ParticipantType.Member:
+                    await hubConnection.SendAsync("SendMessageToMemberAsync",
+                                                  participant.Name,
+                                                  sender.NickName,
+                                                  message.Text);
+                    break;
+                case ParticipantType.Talk:
+                    await hubConnection.SendAsync("SendMessageToTalkAsync",
+                                                  participant.Name,
+                                                  sender.NickName,
+                                                  message.Text);
+                    break;
+                default:
+                    await hubConnection.SendAsync("SendMessageAsync", sender.NickName, message.Text);
+                    break;
+            }
         }
 
-        public void PageButtonClick(int direction)
+        public async Task SendMessageButtonClick()
         {
-            float pageCoefficient = (float)allMessages.Count() / (float)MESSAGES_ON_PAGE;
-
-            pageCounter += direction;
-            
-            if (pageCounter <= 0)
+            if (hubConnection != null)
             {
-                buttonNextDisabled = true;
-            }
-            else
-            {
-                buttonNextDisabled = false;
-            }
-            if (pageCounter > pageCoefficient)
-            {
-                buttonPreviousDisabled = true;
-            }
-            else
-            {
-                buttonPreviousDisabled = false;
-            }
-            messages = (List<MessageModel>)GetTwentyMessages(allMessages);
-        }
-
-        public List<MessageModel> GetTwentyMessages(List<MessageModel> message)
-        {
-            var result = message.Skip(MESSAGES_ON_PAGE * pageCounter).Take(MESSAGES_ON_PAGE).ToList();
-            return result;
-        }
-
-        public bool inputEditedMessage;
-        public bool inputAnswerMessage;
-        public void Edit(int messageId)
-        {
-            mes = messages.SingleOrDefault(m => m.Id == messageId);
-            if (receiver.Type == ReceiverType.Member)
-            {
-                if (mes.MemberId == memberSender.Id)
+                MessageModel message = new()
                 {
-                    editedMessage = mes.Text;
-                }
-            }
-            if (receiver.Type == ReceiverType.Talk)
-            {
-                editedMessage = mes.Text;
+                    Text = outputMessage,
+                    Sender = sender.NickName,
+                    Created = DateTime.Now,
+                    MemberId = sender.Id,
+                    TalkId = participant.TalkId
+                };
 
-                if (memberSender.Id != mes.MemberId)
+                MessageController.Create(message);
+
+                LoadAllMessages();
+
+                await SendMessageAsync(participant, message);
+                outputMessage = string.Empty;
+            }
+        }
+
+        public void OnMessageClick(int selectedMessageId)
+        {
+            selectedMessage = visibleMessages.FirstOrDefault(m => m.Id == selectedMessageId);
+            if (participant.Type == ParticipantType.Member)
+            {
+                if (sender.Id == selectedMessage.MemberId)
                 {
-                    inputAnswerMessage = false;
-                    inputEditedMessage = true;
+                    editedMessage = selectedMessage.Text;
+                    isSelectedOwnMessage = true;
                 }
                 else
                 {
-                    inputAnswerMessage = true;
-                    inputEditedMessage = false;
-                    
+                    editedMessage = string.Empty;
+                    isSelectedOwnMessage = false;
                 }
-                
-                
+            }
+            if (participant.Type == ParticipantType.Talk)
+            {
+                editedMessage = selectedMessage.Text;
+                if (sender.Id == selectedMessage.MemberId)
+                {
+                    isSelectedOwnMessage = true;
+                    isSelectedNotOwnMessage = false;
+                }
+                else
+                {
+                    isSelectedOwnMessage = false;
+                    isSelectedNotOwnMessage = true;
+                }
             }
         }
 
-        public async Task SendDirectClick()
+        public void PreviousPageButtonClick()
         {
-            string outText = $"{answerMessage}\n(Reply in {receiver.Name} on {mes.Created.ToString()})";
-            
-            TalkModel talk = memberSender.Talks.FirstOrDefault(
-                    t => string.Equals(t.Name,
-                                       $"{memberSender.NickName}_{mes.Sender}",
-                                       StringComparison.CurrentCultureIgnoreCase)
-                      || string.Equals(t.Name,
-                                       $"{mes.Sender}_{memberSender.NickName}",
-                                       StringComparison.CurrentCultureIgnoreCase));
+            pageHandler.CurrentPage = pageHandler.PrevPage;
+            LoadVisibleMessages(pageHandler.SkipElements);
+        }
+
+        public void NextPageButtonClick()
+        {
+            pageHandler.CurrentPage = pageHandler.NextPage;
+            LoadVisibleMessages(pageHandler.SkipElements);
+        }
+
+        public void LoadVisibleMessages(int skipMessages)
+        {
+            visibleMessages = allMessages.Skip(skipMessages)
+                                         .Take(MESSAGES_ON_PAGE)
+                                         .ToList();
+        }
+
+        public void LoadAllMessages()
+        {
+            allMessages = MessageController.GetAll()
+                                           .Where(m => m.TalkId == participant.TalkId)
+                                           .Select(m => m)
+                                           .Reverse()
+                                           .ToList();
+            pageHandler.ElementsCount = allMessages.Count;
+            LoadVisibleMessages(pageHandler.SkipElements);
+        }
+
+        public async Task SendAnswerToOwnerButtonClick()
+        {
+            string outText = $"{answerMessage}\n(Reply in {participant.Name} on {selectedMessage.Created.ToString()})";
+
+            TalkModel talk = TalkController.GetByName($"{sender.NickName}_{selectedMessage.Sender}")
+                          ?? TalkController.GetByName($"{selectedMessage.Sender}_{sender.NickName}");
+
             if (talk != null)
             {
                 MessageModel messageModel = new()
                 {
                     Text = outText,
-                    Sender = memberSender.NickName,
+                    Sender = sender.NickName,
                     Created = DateTime.Now,
-                    MemberId = memberSender.Id,
+                    MemberId = sender.Id,
                     TalkId = talk.Id
                 };
 
                 MessageController.Create(messageModel);
                 answerMessage = string.Empty;
-                inputEditedMessage = false;
+                isSelectedOwnMessage = false;
 
-
-                await hubConnection.SendAsync("SendMessageToMemberAsync", mes.Sender, memberSender.NickName, outText);
-
+                await hubConnection.SendAsync("SendMessageToMemberAsync", selectedMessage.Sender, sender.NickName, outText);
             }
         }
 
-        public async Task SendToAllClick()
+        public async Task SendAnswerToAllButtonClick()
         {
-            string outText = $"{answerMessage}\n(Reply on {mes.Sender}, {mes.Created.ToString()})";
+            string outText = $"{answerMessage}\n(Reply on {selectedMessage.Sender}, {selectedMessage.Created.ToString()})";
             MessageModel messageModel = new()
             {
                 Text = outText,
-                Sender = memberSender.NickName,
+                Sender = sender.NickName,
                 Created = DateTime.Now,
-                MemberId = memberSender.Id,
-                TalkId = receiver.TalkId
+                MemberId = sender.Id,
+                TalkId = participant.TalkId
             };
 
             MessageController.Create(messageModel);
             answerMessage = string.Empty;
-            inputEditedMessage = false;
+            isSelectedOwnMessage = false;
 
-
-            await hubConnection.SendAsync("SendMessageToTalkAsync", receiver.Name, memberSender.NickName, outText);
+            await hubConnection.SendAsync("SendMessageToTalkAsync", participant.Name, sender.NickName, outText);
 
         }
 
-        public async Task UpdateMessageClick()
+        public async Task UpdateMessageButtonClick()
         {
-            mes.Text = editedMessage;
-            MessageController.Update(mes);
-            //allMessages = MessageController.GetAll().Where(m => m.TalkId == receiver.TalkId).Select(m => m).Reverse().ToList();
-            //messages = (List<MessageModel>)GetTwentyMessages(allMessages);
+            selectedMessage.Text = editedMessage;
+            MessageController.Update(selectedMessage);
             editedMessage = string.Empty;
-            //await hubConnection.SendAsync("SendMessageAsync", memberSender.NickName, "UpdateMessageClick");
-            switch (receiver.Type)
-            {
-                case ReceiverType.Member:
-                    await hubConnection.SendAsync("SendMessageToMemberAsync",
-                                                  receiver.Name,
-                                                  memberSender.NickName,
-                                                  "");
-                    break;
-                case ReceiverType.Talk:
-                    await hubConnection.SendAsync("SendMessageToTalkAsync",
-                                                  receiver.Name,
-                                                  memberSender.NickName,
-                                                  "");
-                    break;
-                default:
-                    await hubConnection.SendAsync("SendMessageAsync", memberSender.NickName, "");
-                    break;
-            }
-            outputMessage = string.Empty;
+            await hubConnection.SendAsync("SendMessageAsync", sender.NickName, "UpdateMessageClick");
         }
 
-        public async Task DeleteMessageClick()
+        public async Task DeleteMessageButtonClick()
         {
-            if (mes.MemberId == memberSender.Id)
+            if (selectedMessage.MemberId == sender.Id)
             {
-                MessageController.Delete(mes.Id);
-                //allMessages = MessageController.GetAll().Where(m => m.TalkId == receiver.TalkId).Select(m => m).Reverse().ToList();
-                //messages = (List<MessageModel>)GetTwentyMessages(allMessages);
+                MessageController.Delete(selectedMessage.Id);
                 editedMessage = string.Empty;
-                await hubConnection.SendAsync("SendMessageAsync", memberSender.NickName, "DeleteMessageClick");
+                await hubConnection.SendAsync("SendMessageAsync", sender.NickName, "DeleteMessageClick");
             }
         }
 
